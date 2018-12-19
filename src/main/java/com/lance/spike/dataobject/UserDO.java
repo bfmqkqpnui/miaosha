@@ -1,5 +1,5 @@
 package com.lance.spike.dataobject;
-
+// 数据库映射对象
 public class UserDO {
     private Long id;
 
