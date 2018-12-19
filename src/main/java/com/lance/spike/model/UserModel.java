@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * @ClassName UserModel
- * @Description TODO 会员信息模型
+ * @Description TODO 业务层-会员信息模型
  * @Author 陆逸飞
  * @Date 2018-12-19 14:53
  * @Version v1.0

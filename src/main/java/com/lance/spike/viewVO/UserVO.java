@@ -2,7 +2,7 @@ package com.lance.spike.viewVO;
 
 /**
  * @ClassName UserVO
- * @Description TODO 返回前端的视图对象
+ * @Description TODO 视图层-返回前端的视图对象
  * @Author 陆逸飞
  * @Date 2018-12-19 15:42
  * @Version v1.0
