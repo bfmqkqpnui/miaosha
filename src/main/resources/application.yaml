@@ -1,0 +1,26 @@
+server:
+  port: 9090
+spring:
+  datasource:
+    name: miaosha
+    #配置基本属性
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://127.0.0.1:3306/miaosha?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true
+    #使用druid连接池
+    type: com.alibaba.druid.pool.DruidDataSource
+mybatis:
+  # 映射文件所在路径
+  mapper-locations: classpath:mappers/*.xml
+  # 数据库映射类所在包路径
+  type-aliases-package: com.lance.spike.dataobject
+#pagehelper分页插件
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+logging:
+  level:
+    com.lance.spike.dao: debug

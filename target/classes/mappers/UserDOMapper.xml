@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lance.spike.dao.UserDOMapper" >
+  <resultMap id="BaseResultMap" type="com.lance.spike.dataobject.UserDO" >
+    <constructor >
+      <idArg column="id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <arg column="name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="telphone" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="gender" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <arg column="channel" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <arg column="third_party_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="age" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="regist_type" jdbcType="TINYINT" javaType="java.lang.Byte" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, telphone, gender, channel, third_party_id, age, regist_type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from user_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.lance.spike.dataobject.UserDO" >
+    insert into user_info (id, name, telphone, 
+      gender, channel, third_party_id, 
+      age, regist_type)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{telphone,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=TINYINT}, #{channel,jdbcType=TINYINT}, #{thirdPartyId,jdbcType=VARCHAR}, 
+      #{age,jdbcType=INTEGER}, #{registType,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lance.spike.dataobject.UserDO" >
+    insert into user_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="telphone != null" >
+        telphone,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+      <if test="thirdPartyId != null" >
+        third_party_id,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="registType != null" >
+        regist_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="telphone != null" >
+        #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=TINYINT},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=TINYINT},
+      </if>
+      <if test="thirdPartyId != null" >
+        #{thirdPartyId,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="registType != null" >
+        #{registType,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lance.spike.dataobject.UserDO" >
+    update user_info
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="telphone != null" >
+        telphone = #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        gender = #{gender,jdbcType=TINYINT},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=TINYINT},
+      </if>
+      <if test="thirdPartyId != null" >
+        third_party_id = #{thirdPartyId,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="registType != null" >
+        regist_type = #{registType,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lance.spike.dataobject.UserDO" >
+    update user_info
+    set name = #{name,jdbcType=VARCHAR},
+      telphone = #{telphone,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=TINYINT},
+      channel = #{channel,jdbcType=TINYINT},
+      third_party_id = #{thirdPartyId,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      regist_type = #{registType,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
