@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +63,57 @@ public class CommonUtils {
         Pattern p = Pattern.compile("^1\\d{10}$");
         Matcher m = p.matcher(mobile);
         return m.matches();
+    }
+
+    /*
+    * @Title: createSMSCode
+    * @Description 生成短信验证码
+    * @Author 陆逸飞
+    * @Date 2018-12-20 10:01
+    * @Param []
+    * @Return java.lang.String
+    */
+    public static String createSMSCodeFirstMethod(int length) {
+        String code = null;
+        String baseCodeStr = "0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            sb.append(baseCodeStr.charAt(random.nextInt(baseCodeStr.length())));
+        }
+        if (sb.length() == length) {
+            code = sb.toString();
+        }
+        return code;
+    }
+
+    /*
+    * @Title: createSMSCodeSecondMethod
+    * @Description 生成短信验证码
+    * @Author 陆逸飞
+    * @Date 2018-12-20 10:17
+    * @Param []
+    * @Return java.lang.String
+    */
+    public static String createSMSCodeSecondMethod(int length) {
+        String code = null;
+        Random random = new Random();
+        StringBuffer max = new StringBuffer();
+        StringBuffer min = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            max.append("9");
+            min.append("0");
+        }
+        if (min.length() > 0) {
+            min = min.replace(0,1,"1");
+        }
+        int randomInt = random.nextInt(Integer.parseInt(max.toString()));
+        code = String.valueOf(randomInt);
+        if (code.length() < length) {
+            randomInt = Integer.parseInt(min.toString()) + Integer.parseInt(code);
+            code = String.valueOf(randomInt);
+        }
+        return code;
     }
 
     /*

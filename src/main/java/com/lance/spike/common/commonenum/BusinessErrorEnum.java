@@ -9,13 +9,14 @@ import com.lance.spike.error.ICommonError;
  * @Date 2018-12-19 16:36
  * @Version v1.0
  */
-public enum BusinessErrorEnum implements ICommonError{
-    // 通用错误
-    DEFAULT_ERROR("000005", "系统错误，请稍后再试。"),
-    UNKNOW_ERROR("000001", "未知错误"),
-    // 10000开头 为用户信息相关错误
-    USER_NOT_EXIST("100001", "用户不存在"),
-    ;
+public enum BusinessErrorEnum implements ICommonError {
+    // 10000开头 系统通用错误
+    DEFAULT_ERROR("100005", "系统错误，请稍后再试。"),
+    UNKNOW_ERROR("100001", "未知错误"),
+    // 20000开头 为用户信息相关错误
+    USER_NOT_EXIST("200001", "用户不存在"),
+    NOT_PHONENUM("200002", "手机号码不正确"),
+    UNEQUAL_SMS("200003", "短信验证码不正确"),;
 
     private BusinessErrorEnum(String resCode, String msg) {
         this.resCode = resCode;
