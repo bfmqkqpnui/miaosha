@@ -77,7 +77,7 @@ public class CommonUtils {
         String code = null;
         String baseCodeStr = "0123456789";
         Random random = new Random();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
             sb.append(baseCodeStr.charAt(random.nextInt(baseCodeStr.length())));
         }
@@ -98,8 +98,8 @@ public class CommonUtils {
     public static String createSMSCodeSecondMethod(int length) {
         String code = null;
         Random random = new Random();
-        StringBuffer max = new StringBuffer();
-        StringBuffer min = new StringBuffer();
+        StringBuilder max = new StringBuilder();
+        StringBuilder min = new StringBuilder();
         for (int i = 0; i < length; i++) {
             max.append("9");
             min.append("0");
@@ -112,6 +112,28 @@ public class CommonUtils {
         if (code.length() < length) {
             randomInt = Integer.parseInt(min.toString()) + Integer.parseInt(code);
             code = String.valueOf(randomInt);
+        }
+        return code;
+    }
+
+    /*
+    * @Title: createVerifyCode
+    * @Description 创建图片验证码
+    * @Author 陆逸飞
+    * @Date 2018-12-28 16:55
+    * @Param [length]
+    * @Return java.lang.String
+    */
+    public static String createVerifyCode(int length) {
+        String code = null;
+        String baseCodeStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(baseCodeStr.charAt(random.nextInt(baseCodeStr.length())));
+        }
+        if (sb.length() == length) {
+            code = sb.toString();
         }
         return code;
     }

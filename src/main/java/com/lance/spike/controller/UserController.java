@@ -2,6 +2,7 @@ package com.lance.spike.controller;
 
 import com.lance.spike.common.commonenum.BusinessErrorEnum;
 import com.lance.spike.common.utils.CommonUtils;
+import com.lance.spike.common.utils.VerifyUtil;
 import com.lance.spike.common.vo.ReturnDTO;
 import com.lance.spike.exception.BusinessException;
 import com.lance.spike.model.UserModel;
@@ -13,12 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import redis.clients.jedis.JedisPool;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.util.Map;
+import java.util.UUID;
+
 
 /**
  * @ClassName UserController
@@ -100,6 +103,64 @@ public class UserController {
         }
         logger.info("完成校验短信验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
         return dto;
+    }
+
+    @GetMapping("/getVerifyCode")
+    public void createVerifyCode(HttpServletResponse response) throws BusinessException {
+        logger.info("获取图形验证码");
+        long beginTime = System.currentTimeMillis();
+        String verifyCode = CommonUtils.createVerifyCode(4);
+        if (StringUtils.isNotBlank(verifyCode)) {
+            // 将生成的随机验证码存放到redis中
+            String uuId = UUID.randomUUID().toString();
+            redisManager.setValue(uuId, verifyCode, 20);
+            try {
+                // 设置相应类型,告诉浏览器输出的内容为图片
+                response.setContentType("image/jpeg");
+                //设置响应头信息，告诉浏览器不要缓存此内容
+                response.setHeader("Pragma", "No-cache");
+                response.setHeader("Cache-Control", "no-cache");
+                response.setDateHeader("Expire", 0);
+                //输出验证码图片方法
+                BufferedImage image = VerifyUtil.getRandcode(verifyCode, 100, 46, 36);
+                ImageIO.write(image, "JPEG", response.getOutputStream());
+            } catch (Exception e) {
+                logger.error("生成验证码图片失败>>>> ", e);
+            }
+        }
+        logger.info("完成校验短信验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
+    }
+
+    /*
+    * @Title: checkVerifyCode
+    * @Description 校验图片验证码
+    * @Author 陆逸飞
+    * @Date 2018-12-28 17:10
+    * @Param [requestParams]
+    * @Return com.lance.spike.common.vo.ReturnDTO
+    */
+    @PostMapping(value = "/checkVerifyCode")
+    public ReturnDTO checkVerifyCode(@RequestBody Map<String, Object> requestParams) throws BusinessException {
+        logger.info("开始校验图片验证码");
+        long beginTime = System.currentTimeMillis();
+        if (CommonUtils.isExist(requestParams)) {
+            String uuid = requestParams.get("id") == null ? "" : requestParams.get("id").toString();
+            String verifyCode = requestParams.get("verifyCode") == null ? "" : requestParams.get("verifyCode").toString();
+            if (StringUtils.isBlank(uuid) || StringUtils.isBlank(verifyCode)) {
+                throw new BusinessException(BusinessErrorEnum.UNEQUAL_VERIFYCODE);
+            }
+            try {
+                if (checkSMS(uuid, verifyCode)) {
+                    ReturnDTO dto = new ReturnDTO();
+                    dto.setResCode("00100000");
+                    return dto;
+                }
+            } catch (Exception e) {
+                throw new BusinessException(BusinessErrorEnum.UNEQUAL_VERIFYCODE);
+            }
+        }
+        logger.info("完成校验图片验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]");
+        return null;
     }
 
     // 通过读取redis校验短信验证码是否正确

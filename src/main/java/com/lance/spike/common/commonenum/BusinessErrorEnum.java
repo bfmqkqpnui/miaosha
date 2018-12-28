@@ -16,7 +16,8 @@ public enum BusinessErrorEnum implements ICommonError {
     // 20000开头 为用户信息相关错误
     USER_NOT_EXIST("200001", "用户不存在"),
     NOT_PHONENUM("200002", "手机号码不正确"),
-    UNEQUAL_SMS("200003", "短信验证码不正确"),;
+    UNEQUAL_SMS("200003", "短信验证码不正确"),
+    UNEQUAL_VERIFYCODE("200004", "校验码不正确"),;
 
     private BusinessErrorEnum(String resCode, String msg) {
         this.resCode = resCode;
