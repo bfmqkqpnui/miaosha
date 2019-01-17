@@ -126,7 +126,8 @@ public class CommonUtils {
     */
     public static String createVerifyCode(int length) {
         String code = null;
-        String baseCodeStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        // 去掉了1,0,i,o几个容易混淆的字符
+        String baseCodeStr = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {

@@ -17,8 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -105,15 +110,42 @@ public class UserController {
         return dto;
     }
 
-    @GetMapping("/getVerifyCode")
-    public void createVerifyCode(HttpServletResponse response) throws BusinessException {
+    /*@GetMapping("/getVerifyCode")
+    public ReturnDTO createVerifyCode(HttpServletResponse response) throws BusinessException {
         logger.info("获取图形验证码");
+        ReturnDTO dto = new ReturnDTO();
         long beginTime = System.currentTimeMillis();
         String verifyCode = CommonUtils.createVerifyCode(4);
         if (StringUtils.isNotBlank(verifyCode)) {
             // 将生成的随机验证码存放到redis中
             String uuId = UUID.randomUUID().toString();
             redisManager.setValue(uuId, verifyCode, 20);
+            dto.setResCode("00100000");
+            dto.setObj(verifyCode);
+            logger.info("图形验证码为[" + verifyCode + "] ");
+        } else {
+            throw new BusinessException(BusinessErrorEnum.DEFAULT_ERROR);
+        }
+        logger.info("完成图形验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
+        return dto;
+    }*/
+
+    @GetMapping("/getVerifyCode")
+    public ReturnDTO createVerifyCode(HttpServletResponse response) throws BusinessException {
+        logger.info("获取图形验证码");
+        long beginTime = System.currentTimeMillis();
+        ReturnDTO dto = new ReturnDTO();
+        String verifyCode = CommonUtils.createVerifyCode(4);
+        if (StringUtils.isNotBlank(verifyCode)) {
+            logger.info("图形验证码为：" + verifyCode);
+            // 将生成的随机验证码存放到redis中
+            String uuId = UUID.randomUUID().toString();
+            try {
+                redisManager.setValue(uuId, verifyCode, 20);
+            } catch (Exception e) {
+                logger.info("随机图形验证码存储失败：", e);
+            }
+            ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
             try {
                 // 设置相应类型,告诉浏览器输出的内容为图片
                 response.setContentType("image/jpeg");
@@ -123,12 +155,21 @@ public class UserController {
                 response.setDateHeader("Expire", 0);
                 //输出验证码图片方法
                 BufferedImage image = VerifyUtil.getRandcode(verifyCode, 100, 46, 36);
-                ImageIO.write(image, "JPEG", response.getOutputStream());
+                ImageIO.write(image, "JPEG", jpegOutputStream);
+                logger.info("完成图形验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
+                String baseUrl = Base64.getEncoder().encodeToString(jpegOutputStream.toByteArray());
+                dto.setResCode("00100000");
+                Map<String, Object> result = new HashMap<String, Object>();
+                result.put("verifyCodeKey", uuId);
+                result.put("imgBasic64", baseUrl);
+                dto.setObj(result);
             } catch (Exception e) {
                 logger.error("生成验证码图片失败>>>> ", e);
             }
+        } else {
+            throw new BusinessException(BusinessErrorEnum.DEFAULT_ERROR);
         }
-        logger.info("完成校验短信验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
+        return dto;
     }
 
     /*

@@ -24,7 +24,7 @@ public class VerifyUtil {
      * 获得字体
      */
     private static Font getFont() {
-        return new Font("Fixedsys", Font.CENTER_BASELINE, 18);
+        return new Font("Fixedsys", Font.CENTER_BASELINE, 26);
     }
 
     /**
@@ -67,11 +67,11 @@ public class VerifyUtil {
     */
     private static void drowString(Graphics g, String randomString) {
         g.setFont(getFont());
-        g.setColor(new Color(random.nextInt(101), random.nextInt(111), random.nextInt(121)));
-        for (int i = 0; i < randomString.length() - 1; i++) {
+        for (int i = 0; i < randomString.length(); i++) {
             char rand = randomString.charAt(i);
-            g.translate(random.nextInt(3), random.nextInt(3));
-            g.drawString(String.valueOf(rand), 13 * i, 16);
+            g.setColor(new Color(random.nextInt(101), random.nextInt(111), random.nextInt(121)));
+            g.translate(10, 5);
+            g.drawString(String.valueOf(rand), 10*i, 15);
         }
     }
 
