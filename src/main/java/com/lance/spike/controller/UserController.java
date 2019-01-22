@@ -17,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,26 +107,6 @@ public class UserController {
         logger.info("完成校验短信验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
         return dto;
     }
-
-    /*@GetMapping("/getVerifyCode")
-    public ReturnDTO createVerifyCode(HttpServletResponse response) throws BusinessException {
-        logger.info("获取图形验证码");
-        ReturnDTO dto = new ReturnDTO();
-        long beginTime = System.currentTimeMillis();
-        String verifyCode = CommonUtils.createVerifyCode(4);
-        if (StringUtils.isNotBlank(verifyCode)) {
-            // 将生成的随机验证码存放到redis中
-            String uuId = UUID.randomUUID().toString();
-            redisManager.setValue(uuId, verifyCode, 20);
-            dto.setResCode("00100000");
-            dto.setObj(verifyCode);
-            logger.info("图形验证码为[" + verifyCode + "] ");
-        } else {
-            throw new BusinessException(BusinessErrorEnum.DEFAULT_ERROR);
-        }
-        logger.info("完成图形验证码，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
-        return dto;
-    }*/
 
     @GetMapping("/getVerifyCode")
     public ReturnDTO createVerifyCode(HttpServletResponse response) throws BusinessException {
@@ -248,6 +226,63 @@ public class UserController {
         }
         logger.info("完成获取会员信息，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
         return dto;
+    }
+
+    /*
+    * @Title: login
+    * @Description 用户登录
+    * @Author 陆逸飞
+    * @Date 2019-01-18 16:29
+    * @Param [requestParams]
+    * @Return com.lance.spike.common.vo.ReturnDTO
+    */
+    @PostMapping(value = "/login")
+    public ReturnDTO login(@RequestBody Map<String, Object> requestParams) throws BusinessException {
+        logger.info("登录");
+        long beginTime = System.currentTimeMillis();
+        ReturnDTO dto = new ReturnDTO();
+        if (CommonUtils.isExist(requestParams)) {
+            String name = requestParams.get("name") == null ? "" : requestParams.get("name").toString();
+            String pwd = requestParams.get("pwd") == null ? "" : requestParams.get("pwd").toString();
+            String identifyCode = requestParams.get("identifyCode") == null ? "" : requestParams.get("identifyCode").toString();
+            String identifyKey = requestParams.get("identifyKey") == null ? "" : requestParams.get("identifyKey").toString();
+            // 先校验图形验证码是否正确
+            if (checkLoginParams(identifyCode, identifyKey, name, pwd)) {
+                String redisCode = redisManager.getValue(identifyKey);
+                if (StringUtils.isNotBlank(redisCode)) {
+                    if (!StringUtils.equalsIgnoreCase(redisCode, identifyCode)) {
+                        throw new BusinessException(BusinessErrorEnum.UNEQUAL_VERIFYCODE);
+                    }
+                    // 连接数据库查询登录是否可行
+                } else {
+                    throw new BusinessException(BusinessErrorEnum.DEFAULT_ERROR);
+                }
+            }
+        }
+        logger.info("完成 登录，总耗时[" + (System.currentTimeMillis() - beginTime) + "]毫秒");
+        return dto;
+    }
+
+    /*
+    * @Title: checkLoginParams
+    * @Description 非空校验
+    * @Author 陆逸飞
+    * @Date 2019-01-22 20:11
+    * @Param [identifyCode, identifyKey, name, pwd]
+    * @Return java.lang.Boolean
+    */
+    private Boolean checkLoginParams(String identifyCode, String identifyKey, String name, String pwd) throws BusinessException {
+        Boolean flag = true;
+        if (StringUtils.isBlank(identifyCode) || StringUtils.isBlank(identifyKey)) {
+            throw new BusinessException(BusinessErrorEnum.VERIFYCODE_NOT_EXIST);
+        }
+        if (StringUtils.isBlank(name)) {
+            throw new BusinessException(BusinessErrorEnum.NAME_NOT_EXIST);
+        }
+        if (StringUtils.isBlank(pwd)) {
+            throw new BusinessException(BusinessErrorEnum.PASSWORD_NOT_EXIST);
+        }
+        return flag;
     }
 
     /*

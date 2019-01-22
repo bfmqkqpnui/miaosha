@@ -17,7 +17,10 @@ public enum BusinessErrorEnum implements ICommonError {
     USER_NOT_EXIST("200001", "用户不存在"),
     NOT_PHONENUM("200002", "手机号码不正确"),
     UNEQUAL_SMS("200003", "短信验证码不正确"),
-    UNEQUAL_VERIFYCODE("200004", "校验码不正确"),;
+    UNEQUAL_VERIFYCODE("200004", "校验码不正确"),
+    VERIFYCODE_NOT_EXIST("200005", "校验码必填"),
+    NAME_NOT_EXIST("200006", "登录账号必填"),
+    PASSWORD_NOT_EXIST("200007", "登录密码必填"),;
 
     private BusinessErrorEnum(String resCode, String msg) {
         this.resCode = resCode;
